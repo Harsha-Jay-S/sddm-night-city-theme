@@ -35,6 +35,36 @@ system — falls back to a generic Linux glyph if none is found), and enables
 the battery-percentage indicator. Re-run it any time after `git pull` to
 update an existing install.
 
+## Greeter runs on X11 (mouse-input fix)
+
+Fedora's default SDDM greeter runs under **weston** (Wayland, `--shell=kiosk`),
+which does not reliably deliver mouse clicks to a QML theme surface when
+fractional/HiDPI scaling is in use — the keyboard works but buttons don't
+respond. To avoid this, `install.sh` sets the **greeter** to X11 when `Xorg` is
+available, via `/etc/sddm.conf.d/20-night-city-x11.conf`:
+
+```ini
+[General]
+DisplayServer=x11
+```
+
+This only changes the login screen — you still log into whatever (Wayland)
+desktop session you pick. To revert to the default Wayland greeter:
+
+```bash
+sudo rm /etc/sddm.conf.d/20-night-city-x11.conf && sudo systemctl restart sddm
+```
+
+If `Xorg` isn't installed and you hit dead buttons on the Wayland greeter, the
+underlying issue is weston's output scale. As an alternative to X11 you can try
+forcing the greeter scale to 1 (or matching your panel) via a `weston.ini` for
+the `sddm` user / SDDM's `[Wayland]` compositor settings — fiddlier and less
+reliable than the X11 route above.
+
+**Lock-out safety:** changing the greeter's display server is a login-screen
+change. If the X11 greeter ever fails to start, switch to a text console
+(Ctrl+Alt+F3), log in, run the revert command above, and reboot.
+
 ## Test without switching
 
 ```bash

@@ -121,6 +121,30 @@ else
     echo "Set Current=$THEME_NAME in /etc/sddm.conf.d/10-theme.conf"
 fi
 
+# --- run the greeter on X11 (reliable mouse input) ---
+# Fedora's default SDDM greeter runs under weston (Wayland, `--shell=kiosk`),
+# which mis-delivers pointer clicks to a QML theme surface under fractional/
+# HiDPI scaling — keyboard works but buttons don't. The X11 greeter delivers
+# clicks reliably. This only changes the *greeter*; the user still logs into
+# whatever (Wayland) session they pick. Written as a separate, clearly-named
+# drop-in so it is trivial to revert. Only done when Xorg is actually present.
+X11_DROPIN=/etc/sddm.conf.d/20-night-city-x11.conf
+if command -v Xorg >/dev/null 2>&1; then
+    mkdir -p /etc/sddm.conf.d
+    printf '[General]\nDisplayServer=x11\n' > "$X11_DROPIN"
+    echo ""
+    echo "NOTE: set the SDDM greeter to X11 (DisplayServer=x11) for reliable mouse"
+    echo "      input — the weston Wayland greeter drops clicks under HiDPI scaling."
+    echo "      This affects only the login screen, not your desktop session."
+    echo "      Revert with:  sudo rm $X11_DROPIN  &&  sudo systemctl restart sddm"
+else
+    echo ""
+    echo "NOTE: Xorg not found, leaving the greeter on its default display server."
+    echo "      If buttons don't respond to the mouse at the login screen, it is the"
+    echo "      weston Wayland greeter; install Xorg or see the README for the"
+    echo "      Wayland greeter-scale workaround."
+fi
+
 echo ""
 echo "=== Installed to $THEME_DST ==="
 echo ""
