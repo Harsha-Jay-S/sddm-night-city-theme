@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 
 Item {
     id: root
@@ -12,6 +13,7 @@ Item {
     anchors.rightMargin: 60
     width: row.implicitWidth
     height: 52
+    z: 10
 
     function svgIcon(paths, sw, strokeColor) {
         var sc = strokeColor || "currentColor"
@@ -59,37 +61,46 @@ Item {
 
             delegate: Rectangle {
                 id: btn
+                property var btnPaths: modelData.paths
+                property var btnColor: modelData.color
+                property var btnHoverColor: modelData.hoverColor
+                property var btnBorderColor: modelData.borderColor
+                property var btnHoverBorder: modelData.hoverBorder
+                property var btnAction: modelData.action
+                property bool hovered: btnMouse.containsMouse
+
                 width: 52
                 height: 52
                 radius: 14
-                color: Qt.rgba(10/255, 8/255, 20/255, 0.5)
-                border { width: 1; color: modelData.borderColor }
+                color: Qt.rgba(10/255, 8/255, 20/255, hovered ? 0.7 : 0.5)
+                border { width: 1; color: hovered ? btnHoverBorder : btnBorderColor }
+
+                layer.enabled: hovered
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: btn.btnHoverBorder
+                    shadowBlur: 0.4
+                    shadowOpacity: 0.5
+                }
 
                 Image {
                     id: iconImage
                     width: 22
                     height: 22
                     anchors.centerIn: parent
-                    source: root.svgIcon(modelData.paths, "1.8", modelData.color)
+                    source: root.svgIcon(btn.btnPaths, "1.8", btn.hovered ? btn.btnHoverColor : btn.btnColor)
                     sourceSize { width: 22; height: 22 }
                 }
 
                 MouseArea {
+                    id: btnMouse
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onEntered: {
-                        parent.border.color = modelData.hoverBorder
-                        parent.color = Qt.rgba(10/255, 8/255, 20/255, 0.7)
-                    }
-                    onExited: {
-                        parent.border.color = modelData.borderColor
-                        parent.color = Qt.rgba(10/255, 8/255, 20/255, 0.5)
-                    }
                     onClicked: {
-                        if (modelData.action === "suspend") sddm.suspend()
-                        else if (modelData.action === "reboot") sddm.reboot()
-                        else if (modelData.action === "powerOff") sddm.powerOff()
+                        if (btn.btnAction === "suspend") sddm.suspend()
+                        else if (btn.btnAction === "reboot") sddm.reboot()
+                        else if (btn.btnAction === "powerOff") sddm.powerOff()
                     }
                 }
             }

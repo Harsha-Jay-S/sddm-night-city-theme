@@ -18,9 +18,26 @@ cp "$THEME_SRC/ClockDisplay.qml" "$THEME_DST/ClockDisplay.qml"
 cp "$THEME_SRC/StatusPills.qml" "$THEME_DST/StatusPills.qml"
 cp "$THEME_SRC/AuthPanel.qml" "$THEME_DST/AuthPanel.qml"
 cp "$THEME_SRC/PowerButtons.qml" "$THEME_DST/PowerButtons.qml"
+cp "$THEME_SRC/SessionSwitcher.qml" "$THEME_DST/SessionSwitcher.qml"
 cp "$ASSETS/background.jpg" "$THEME_DST/background.jpg"
 cp "$THEME_SRC/metadata.desktop" "$THEME_DST/metadata.desktop"
 cp "$ASSETS/fonts/"*.ttf "$THEME_DST/fonts/"
+
+# Bake the OS name into StatusPills.qml (reading it at runtime would need file
+# XHR, which Qt 6 disables by default).
+OS_NAME=$( ( . /etc/os-release 2>/dev/null; echo "${NAME:-Linux}${VERSION_ID:+ $VERSION_ID}" ) | tr '[:lower:]' '[:upper:]' )
+sed -i "s|__OS_NAME__|${OS_NAME}|g" "$THEME_DST/StatusPills.qml"
+echo "OS pill set to: $OS_NAME"
+
+# Allow the greeter's QML to read sysfs (battery %) via XMLHttpRequest. Qt 6
+# blocks GET on local files unless QML_XHR_ALLOW_FILE_READ=1 is in the greeter
+# environment. /etc/pam.d/sddm-greeter runs pam_env, which loads /etc/environment
+# into the greeter session, so setting it there reliably reaches the greeter.
+# Takes effect on the next greeter start (reboot / systemctl restart sddm).
+if ! grep -q '^QML_XHR_ALLOW_FILE_READ=' /etc/environment 2>/dev/null; then
+    echo 'QML_XHR_ALLOW_FILE_READ=1' >> /etc/environment
+    echo "Added QML_XHR_ALLOW_FILE_READ=1 to /etc/environment"
+fi
 
 restorecon -v "$THEME_DST/"*.qml "$THEME_DST/background.jpg" "$THEME_DST/metadata.desktop" "$THEME_DST/fonts/"*.ttf 2>/dev/null || true
 

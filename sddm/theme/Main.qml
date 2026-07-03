@@ -55,6 +55,14 @@ Rectangle {
         }
     }
 
+    // Cosmetic pause after a REAL onLoginSucceeded signal, so the success
+    // state is visibly on screen for a beat before the panel settles.
+    Timer {
+        id: successRevealTimer
+        interval: 1000
+        onTriggered: root.loginSucceeded = true
+    }
+
     BackgroundLayer {
         anchors.fill: parent
     }
@@ -83,12 +91,14 @@ Rectangle {
 
     PowerButtons { }
 
+    SessionSwitcher { }
+
     Connections {
         target: sddm
         function onLoginSucceeded() {
             testModeFallback.stop()
-            root.loginSucceeded = true
             root.loginDenied = false
+            successRevealTimer.restart()
         }
         function onLoginFailed() {
             testModeFallback.stop()
