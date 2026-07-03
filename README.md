@@ -4,6 +4,14 @@ Cyberpunk/anime login theme for **SDDM** (QML).
 
 Full QML theme with animated scanlines, corner brackets, glassmorphism auth panel, orbital clock glow, and power buttons.
 
+## Requirements
+
+- **SDDM** 0.22+ (display manager)
+- **Qt 6** (uses `QtQuick.Effects` — Qt 5 / Qt 5Compat not supported)
+- Test command: `sddm-greeter-qt6`
+
+Tested on Fedora 43 / Qt 6.10 / SDDM 0.22.
+
 ## Install
 
 ```bash
