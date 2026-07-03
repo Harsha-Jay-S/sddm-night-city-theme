@@ -44,17 +44,6 @@ Rectangle {
         onTriggered: root.loginDenied = false
     }
 
-    Timer {
-        id: testModeFallback
-        interval: 1500
-        onTriggered: {
-            if (!root.loginSucceeded && !root.loginDenied) {
-                root.loginSucceeded = true
-                authPanel.textPass.readOnly = true
-            }
-        }
-    }
-
     // Cosmetic pause after a REAL onLoginSucceeded signal, so the success
     // state is visibly on screen for a beat before the panel settles.
     Timer {
@@ -96,12 +85,10 @@ Rectangle {
     Connections {
         target: sddm
         function onLoginSucceeded() {
-            testModeFallback.stop()
             root.loginDenied = false
             successRevealTimer.restart()
         }
         function onLoginFailed() {
-            testModeFallback.stop()
             root.loginSucceeded = false
             root.loginDenied = true
             denyGlowTimer.restart()
@@ -117,7 +104,6 @@ Rectangle {
         if (!user || !password) return
 
         authPanel.textPass.readOnly = true
-        testModeFallback.start()
         sddm.login(user, password, session)
     }
 

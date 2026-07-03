@@ -26,7 +26,7 @@ Item {
 
     // Initialise the button label from the currently-selected session.
     Repeater {
-        model: sddm.sessions
+        model: sessionModel
         delegate: Item {
             visible: false
             Component.onCompleted: {
@@ -61,15 +61,6 @@ Item {
             color: root.popupOpen || btnMouse.containsMouse
                 ? "#35e8ff"
                 : Qt.rgba(53/255, 232/255, 255/255, 0.3)
-        }
-        layer {
-            enabled: btnMouse.containsMouse || root.popupOpen
-            effect: MultiEffect {
-                shadowEnabled: true
-                shadowColor: "#35e8ff"
-                shadowBlur: 0.4
-                shadowOpacity: 0.4
-            }
         }
 
         Row {
@@ -148,7 +139,7 @@ Item {
             spacing: 2
 
             Repeater {
-                model: sddm.sessions
+                model: sessionModel
                 delegate: Item {
                     property string sesName: model ? model.name : ""
                     property int sesIndex: model ? model.index : -1

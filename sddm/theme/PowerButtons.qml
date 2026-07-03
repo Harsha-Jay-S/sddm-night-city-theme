@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 
 Item {
     id: root
@@ -74,14 +73,6 @@ Item {
                 radius: 14
                 color: Qt.rgba(10/255, 8/255, 20/255, hovered ? 0.7 : 0.5)
                 border { width: 1; color: hovered ? btnHoverBorder : btnBorderColor }
-
-                layer.enabled: hovered
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowColor: btn.btnHoverBorder
-                    shadowBlur: 0.4
-                    shadowOpacity: 0.5
-                }
 
                 Image {
                     id: iconImage
