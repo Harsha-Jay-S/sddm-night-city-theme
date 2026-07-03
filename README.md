@@ -48,11 +48,18 @@ available, via `/etc/sddm.conf.d/20-night-city-x11.conf`:
 DisplayServer=x11
 ```
 
+Because the greeter now runs on X11, `install.sh` also drops
+`/etc/X11/xorg.conf.d/40-night-city-touchpad-tap.conf` to enable touchpad
+**tap-to-click** at the greeter (libinput leaves tapping off by default, and the
+greeter has no per-user desktop setting to turn it on).
+
 This only changes the login screen — you still log into whatever (Wayland)
 desktop session you pick. To revert to the default Wayland greeter:
 
 ```bash
-sudo rm /etc/sddm.conf.d/20-night-city-x11.conf && sudo systemctl restart sddm
+sudo rm /etc/sddm.conf.d/20-night-city-x11.conf \
+        /etc/X11/xorg.conf.d/40-night-city-touchpad-tap.conf
+sudo systemctl restart sddm
 ```
 
 If `Xorg` isn't installed and you hit dead buttons on the Wayland greeter, the

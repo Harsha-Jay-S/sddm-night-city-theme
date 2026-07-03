@@ -129,14 +129,28 @@ fi
 # whatever (Wayland) session they pick. Written as a separate, clearly-named
 # drop-in so it is trivial to revert. Only done when Xorg is actually present.
 X11_DROPIN=/etc/sddm.conf.d/20-night-city-x11.conf
+TAP_CONF=/etc/X11/xorg.conf.d/40-night-city-touchpad-tap.conf
 if command -v Xorg >/dev/null 2>&1; then
     mkdir -p /etc/sddm.conf.d
     printf '[General]\nDisplayServer=x11\n' > "$X11_DROPIN"
+    # Enable touchpad tap-to-click at the X11 greeter. libinput leaves tapping
+    # OFF by default; a desktop (GNOME) turns it on per-user, but the greeter
+    # has no such setting, so without this you must physically press the pad.
+    mkdir -p /etc/X11/xorg.conf.d
+    cat > "$TAP_CONF" <<'TAPCONF'
+Section "InputClass"
+    Identifier "night-city touchpad tap-to-click"
+    MatchIsTouchpad "on"
+    Driver "libinput"
+    Option "Tapping" "on"
+EndSection
+TAPCONF
     echo ""
     echo "NOTE: set the SDDM greeter to X11 (DisplayServer=x11) for reliable mouse"
     echo "      input — the weston Wayland greeter drops clicks under HiDPI scaling."
+    echo "      Also enabled touchpad tap-to-click at the greeter ($TAP_CONF)."
     echo "      This affects only the login screen, not your desktop session."
-    echo "      Revert with:  sudo rm $X11_DROPIN  &&  sudo systemctl restart sddm"
+    echo "      Revert with:  sudo rm $X11_DROPIN $TAP_CONF  &&  sudo systemctl restart sddm"
 else
     echo ""
     echo "NOTE: Xorg not found, leaving the greeter on its default display server."
