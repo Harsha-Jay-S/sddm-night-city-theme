@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BASE=/home/jayharsha/night-city-theme
+BASE=$(cd "$(dirname "$0")/.." && pwd)
 THEME_SRC=$BASE/sddm/theme
 ASSETS=$BASE/assets
 THEME_DST=/usr/share/sddm/themes/night-city

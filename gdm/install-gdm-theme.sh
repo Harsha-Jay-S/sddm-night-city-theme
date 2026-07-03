@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # === Night City GDM Theme Installer ===
-# Run: sudo bash /home/jayharsha/night-city-theme/gdm/install-gdm-theme.sh
+# Run: sudo bash gdm/install-gdm-theme.sh
 
-BASE="/home/jayharsha/night-city-theme"
+BASE=$(cd "$(dirname "$0")/.." && pwd)
 FONT_DIR="/usr/local/share/fonts/truetype/night-city"
 TMPDIR=$(mktemp -d /tmp/gdm-theme-XXXXXX)
 trap "rm -rf $TMPDIR" EXIT
