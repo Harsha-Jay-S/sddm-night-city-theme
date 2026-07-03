@@ -1,17 +1,15 @@
-# Night City Login Theme
+# SDDM Night City Theme
 
-Cyberpunk/anime login theme for **SDDM** (QML) and **GDM** (CSS).
-
-## SDDM Theme
+Cyberpunk/anime login theme for **SDDM** (QML).
 
 Full QML theme with animated scanlines, corner brackets, glassmorphism auth panel, orbital clock glow, and power buttons.
 
-### Install
+## Install
 
 ```bash
 # Clone anywhere
-git clone <repo-url> night-city-theme
-cd night-city-theme
+git clone <repo-url> sddm-night-city-theme
+cd sddm-night-city-theme
 
 # Install theme files
 sudo bash sddm/apply_fix.sh
@@ -22,39 +20,10 @@ sudo systemctl enable sddm.service
 reboot
 ```
 
-### Test without switching
+## Test without switching
 
 ```bash
 sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/night-city
-```
-
-## GDM Theme
-
-CSS patch for GNOME Shell's lock screen — custom wallpaper, Orbitron/ChakraPetch fonts, cyan accent color, dark glass login dialog.
-
-### Install
-
-```bash
-sudo bash gdm/install-gdm-theme.sh
-sudo systemctl disable sddm.service
-sudo systemctl enable gdm.service
-reboot
-```
-
-### Re-apply after gnome-shell update
-
-gnome-shell updates overwrite the theme. Run the install script again:
-
-```bash
-sudo bash gdm/install-gdm-theme.sh
-```
-
-### Restore stock GDM
-
-```bash
-sudo dnf reinstall gnome-shell
-sudo rm -f /etc/dconf/db/gdm.d/01-cyber-accent
-sudo dconf update
 ```
 
 ## Assets
@@ -68,17 +37,13 @@ sudo dconf update
 ## Layout
 
 ```
-night-city-theme/
+sddm-night-city-theme/
 ├── assets/
 │   ├── fonts/           # Shared TTF files
 │   └── background.jpg
 ├── sddm/
 │   ├── theme/           # 7 QML files + metadata.desktop
 │   └── apply_fix.sh     # Installs to /usr/share/sddm/themes/night-city
-├── gdm/
-│   ├── gdm-dark.patch
-│   ├── gdm-light.patch
-│   ├── gnome-shell-theme.gresource.xml
-│   └── install-gdm-theme.sh
-└── README.md
+├── README.md
+└── .gitignore
 ```
