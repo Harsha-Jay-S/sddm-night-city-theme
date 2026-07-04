@@ -44,14 +44,6 @@ Rectangle {
         onTriggered: root.loginDenied = false
     }
 
-    // Cosmetic pause after a REAL onLoginSucceeded signal, so the success
-    // state is visibly on screen for a beat before the panel settles.
-    Timer {
-        id: successRevealTimer
-        interval: 1000
-        onTriggered: root.loginSucceeded = true
-    }
-
     BackgroundLayer {
         anchors.fill: parent
     }
@@ -80,13 +72,16 @@ Rectangle {
 
     PowerButtons { }
 
-    SessionSwitcher { }
+    SessionSwitcher { id: sessionSwitcher }
 
     Connections {
         target: sddm
         function onLoginSucceeded() {
+            // Reveal success immediately: SDDM tears the greeter down within a
+            // few hundred ms of this signal, so any delayed reveal loses the
+            // race and the user just sees the greeter vanish (a glitch).
             root.loginDenied = false
-            successRevealTimer.restart()
+            root.loginSucceeded = true
         }
         function onLoginFailed() {
             root.loginSucceeded = false
@@ -100,7 +95,7 @@ Rectangle {
     function doLogin() {
         var user = userModel ? userModel.lastUser : ""
         var password = authPanel.textPass.text
-        var session = sessionModel ? sessionModel.lastIndex : 0
+        var session = sessionSwitcher.selectedIndex
         if (!user || !password) return
 
         authPanel.textPass.readOnly = true

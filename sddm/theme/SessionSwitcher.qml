@@ -16,6 +16,10 @@ Item {
 
     property bool popupOpen: false
     property string currentSessionName: "SESSION"
+    // The chosen session row, passed to sddm.login(). Initialised to the
+    // persisted last-used session (sessionModel.lastIndex is READ-ONLY, so the
+    // selection must live here, not be written back to the model).
+    property int selectedIndex: sessionModel ? sessionModel.lastIndex : 0
 
     function svgIcon(paths, sw, strokeColor) {
         var sc = strokeColor || "currentColor"
@@ -30,7 +34,7 @@ Item {
         delegate: Item {
             visible: false
             Component.onCompleted: {
-                if (model.index === (sessionModel ? sessionModel.lastIndex : 0))
+                if (model.index === root.selectedIndex)
                     root.currentSessionName = model.name
             }
         }
@@ -158,7 +162,7 @@ Item {
                     Label {
                         text: sesName
                         font { family: "Chakra Petch"; pixelSize: 13; letterSpacing: 1.3 }
-                        color: sesIndex === (sessionModel ? sessionModel.lastIndex : -1)
+                        color: sesIndex === root.selectedIndex
                             ? "#35e8ff" : "#dff2ff"
                         anchors {
                             left: parent.left; leftMargin: 12
@@ -167,7 +171,7 @@ Item {
                     }
 
                     Rectangle {
-                        visible: sesIndex === (sessionModel ? sessionModel.lastIndex : -1)
+                        visible: sesIndex === root.selectedIndex
                         width: 7; height: 7; radius: 3.5
                         color: "#35e8ff"
                         anchors {
@@ -182,8 +186,7 @@ Item {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (sessionModel)
-                                sessionModel.lastIndex = sesIndex
+                            root.selectedIndex = sesIndex
                             root.currentSessionName = sesName
                             root.popupOpen = false
                         }
